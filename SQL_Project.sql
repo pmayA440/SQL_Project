@@ -108,4 +108,23 @@ JOIN address USING (address_id)
 JOIN city USING (city_id)
 JOIN country USING (country_id);
 
+SELECT name, count(amount) "Gross Revenue" FROM category
+JOIN film_category USING (category_id)
+JOIN inventory USING (film_id)
+JOIN rental USING (inventory_id)
+JOIN payment USING (rental_id) 
+GROUP BY name
+ORDER BY count(amount) DESC LIMIT 5;
 
+CREATE VIEW Top5Genres AS
+SELECT name, count(amount) "Gross Revenue" FROM category
+JOIN film_category USING (category_id)
+JOIN inventory USING (film_id)
+JOIN rental USING (inventory_id)
+JOIN payment USING (rental_id) 
+GROUP BY name
+ORDER BY count(amount) DESC LIMIT 5;
+
+SELECT * FROM Top5Genres;
+
+DROP VIEW Top5Genres;
