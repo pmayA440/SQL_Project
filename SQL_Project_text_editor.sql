@@ -19,33 +19,38 @@ WHERE last_name LIKE '%LI%'
 ORDER BY last_name, first_name;
 
 # 2d. Using IN, display the country_id and country columns of the following countries: Afghanistan, Bangladesh, and China:
--- SELECT country_id, county FROM 
--- WHERE name = Afghanistan, Bangladesh, China;
-
+SELECT country_id, country FROM country
+WHERE country IN ('Afghanistan','Bangladesh','China');
 
 # 3a. You want to keep a description of each actor. You don't think you will be performing queries on a description, so create a column in the table actor named description and use the data type BLOB (Make sure to research the type BLOB, as the difference between it and VARCHAR are significant).
+ALTER TABLE actor
+ADD description BLOB;
 
 # 3b. Very quickly you realize that entering descriptions for each actor is too much effort. Delete the description column.
+ALTER TABLE actor 
+DROP description;
 
 # 4a. List the last names of actors, as well as how many actors have that last name.
-SELECT last, count(last) FROM actors;
+SELECT last_name, count(last_name) FROM actor
+GROUP BY last_name;
 
 # 4b. List last names of actors and the number of actors who have that last name, but only for names that are shared by at least two actors
-SELECT last, count(last) FROM actors
-WHERE count(last) >= 2;
+SELECT last_name, count(last_name) 'count' FROM actor
+GROUP BY last_name
+HAVING count(last_name) > 1;
 
 # 4c. The actor HARPO WILLIAMS was accidentally entered in the actor table as GROUCHO WILLIAMS. Write a query to fix the record.
-UPDATE actors
-SET HARPO  = GROUCHO
-WHERE first = "HARP0";
+UPDATE actor SET first_name = "GROUCHO"
+WHERE first_name = "HARP0";
 
 # 4d. Perhaps we were too hasty in changing GROUCHO to HARPO. It turns out that GROUCHO was the correct name after all! In a single query, if the first name of the actor is currently HARPO, change it to GROUCHO.
-UPDATE actors
-SET GROUCHO = HARPO
-WHERE first = "GROUCHO";
+UPDATE actor SET first_name = "HARP0"
+WHERE first_name = "GROUCHO";
 
 # 5a. You cannot locate the schema of the address table. Which query would you use to re-create it?
 # Hint: https://dev.mysql.com/doc/refman/5.7/en/show-create-table.html
+
+
 
 # 6a. Use JOIN to display the first and last names, as well as the address, of each staff member. Use the tables staff and address:
 # 6b. Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment.
