@@ -49,24 +49,85 @@ WHERE first_name = "GROUCHO";
 
 # 5a. You cannot locate the schema of the address table. Which query would you use to re-create it?
 # Hint: https://dev.mysql.com/doc/refman/5.7/en/show-create-table.html
-
-
+SHOW CREATE TABLE address;
 
 # 6a. Use JOIN to display the first and last names, as well as the address, of each staff member. Use the tables staff and address:
+SELECT first_name, last_name, address FROM staff 
+JOIN address USING (address_id);
+
 # 6b. Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment.
+SELECT CONCAT(first_name," ", last_name) "Full Name", sum(amount) FROM staff 
+JOIN payment USING (staff_id)
+Group BY CONCAT(first_name," ", last_name);
+
 # 6c. List each film and the number of actors who are listed for that film. Use tables film_actor and film. Use inner join.
+SELECT title, sum(actor_id) "Actor Count" FROM film 
+INNER JOIN film_actor USING (film_id)
+GROUP BY title;
+
 # 6d. How many copies of the film Hunchback Impossible exist in the inventory system?
+SELECT count(film_id) "Count" FROM inventory
+WHERE film_id in ( 
+	SELECT film_id FROM film
+    WHERE title = "Hunchback Impossible");
+
 # 6e. Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
+SELECT last_name, sum(amount) "Total Paid" from customer
+JOIN payment USING (customer_id)
+GROUP BY last_name
+ORDER BY last_name ASC;
 
 # 7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+SELECT title FROM film 
+WHERE title LIKE 'q%' OR title LIKE 'k%' 
+AND language_id IN (
+		SELECT language_id FROM language 
+		WHERE name = "English");
+
 # 7b. Use subqueries to display all actors who appear in the film Alone Trip.
+SELECT first_name, last_name FROM actor 
+WHERE actor_id IN (
+	SELECT actor_id FROM film 
+	WHERE film_id IN (
+		SELECT film_id FROM film 
+		WHERE title = "Alone Trip"));
+
 # 7c. You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. Use joins to retrieve this information.
+SELECT first_name, last_name, email, country FROM customer 
+JOIN address USING (address_id) 
+JOIN city USING (city_id)
+JOIN country USING (country_id)
+Where country = "Canada";
+
 # 7d. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as family films.
+SELECT title, name FROM film 
+JOIN film_category USING (film_id) 
+JOIN category USING (category_id)
+Where name = "Family";
+
 # 7e. Display the most frequently rented movies in descending order.
+SELECT title, count(rental_id) "Rental Frequency" FROM film
+JOIN inventory USING (film_id)
+JOIN rental USING (inventory_id)
+GROUP BY title
+ORDER BY count(rental_id) DESC;
+
 # 7f. Write a query to display how much business, in dollars, each store brought in.
+SELECT store_id "Store", sum(amount) "Revenue (in $)" FROM payment
+JOIN staff USING (staff_id)
+JOIN store USING (store_id)
+GROUP BY store_id;
+
 # 7g. Write a query to display for each store its store ID, city, and country.
+SELECT store_id "Store", city, country FROM store
+JOIN address USING (address_id)
+JOIN city USING (city_id)
+JOIN country USING (country_id);
+
 # 7h. List the top five genres in gross revenue in descending order. (Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
 
 # 8a. In your new role as an executive, you would like to have an easy way of viewing the Top five genres by gross revenue. Use the solution from the problem above to create a view. If you haven't solved 7h, you can substitute another query to create a view.
+
 # 8b. How would you display the view that you created in 8a?
+
 # 8c. You find that you no longer need the view top_five_genres. Write a query to delete it.
